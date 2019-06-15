@@ -1,0 +1,305 @@
+#include <Adafruit_NeoPixel.h>
+
+long randNumber;
+#define PIN            9
+
+#define NUMPIXELS      8
+
+  
+
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB /*+ NEO_KHZ800*/);
+
+//define some colors
+  uint32_t red = pixels.Color(255, 0, 0);
+  uint32_t yellow = pixels.Color(255, 255, 0);
+  uint32_t orange = pixels.Color(255, 165, 0);
+  uint32_t green = pixels.Color(0, 255, 0);
+  uint32_t blue = pixels.Color(0, 0, 255);
+  uint32_t purple = pixels.Color(255, 0, 255);
+  uint32_t black = pixels.Color(0, 0, 0);
+
+  // delay var
+  int delayval = 100;
+
+void setup() {
+  //start neopixels
+  pixels.begin();
+
+  // another thing that should be looked at again
+  randomSeed(analogRead(0));
+
+  //give things a second to get started, why not?
+  delay(1000);
+}
+
+void loop() {
+
+ // light show
+  down();
+  up();
+  down();
+  up();
+  stackUp();
+  blockDown();
+  allOn();
+  blockDown();
+  flash(10);
+  hotFuzzFlash(15);
+  hotFuzzRun(10);
+  hotFuzzFlash(15);
+  pride(3,0);
+  pride(3,1);
+  fade();
+
+}
+
+int down(){
+  
+  for(int i=0;i<8 ; i++){
+
+    pixels.setPixelColor(i, pixels.Color(random(254),random(254),random(254)));
+    pixels.show(); // This sends the updated pixel color to the hardware.
+    delay(delayval); // Delay for a period of time (in milliseconds).
+    pixels.setPixelColor(i, pixels.Color(0,0,0));
+    pixels.show();
+
+  }
+}
+
+int up(){
+  for(int i=NUMPIXELS -1 ;i>0; i--){
+    pixels.setPixelColor(i, pixels.Color(random(254),random(254),random(254)));
+    pixels.show(); // This sends the updated pixel color to the hardware.
+    delay(delayval); // Delay for a period of time (in milliseconds).
+    pixels.setPixelColor(i, pixels.Color(random(0),random(0),random(0)));
+    pixels.show();
+  }
+}
+
+int stackUp(){
+  int  led = 8;
+  for(int x = led-1; x>-1;x--){ 
+    int r = random(254);
+    int g = random(254);
+    int b = random(254);
+    for(int i=0;i<led ; i++){
+    
+      pixels.setPixelColor(i, pixels.Color(r,g,b));
+      pixels.show(); // This sends the updated pixel color to the hardware.
+      delay(delayval); // Delay for a period of time (in milliseconds).
+      pixels.setPixelColor(i, pixels.Color(0,0,0));
+      //pixels.clear();
+      pixels.show();
+    
+    }
+    pixels.setPixelColor(x, pixels.Color(r,g,b));
+    pixels.show();
+    led--;
+  }
+}
+
+
+
+int blockDown(){
+  int led = 0;
+  
+  for(int i=led;i<8; i++){
+    int r = random(254);
+    int g = random(254);
+    int b = random(254);
+    pixels.setPixelColor(7, pixels.Color(0,0,0));
+    pixels.show();
+    
+    //delay(delayval);
+    for(int x = 8; x>led;x--){
+      pixels.setPixelColor(x, pixels.Color(0,0,0));
+      pixels.show(); // This sends the updated pixel color to the hardware.
+      //delay(delayval); // Delay for a period of time (in milliseconds).
+      pixels.setPixelColor(x, pixels.Color(r,g,b));
+      pixels.show();
+  }
+  delay(delayval);
+  pixels.setPixelColor(i, pixels.Color(0,0,0));
+  pixels.show();
+  led++; 
+  
+  }
+}
+
+int flash(int n){
+  //n = number of time to loop
+  for(int y = 0; y<n;y++){ 
+    int r = random(128);
+    int g = random(128);
+    int b = random(128);
+    
+    for(int i=0;i<8 ; i++){
+    
+      pixels.setPixelColor(i, pixels.Color(r,g,b));
+      pixels.show(); // This sends the updated pixel color to the hardware.
+      
+    }
+    delay(delayval+100);
+    for(int i=0;i<8 ; i++){
+    
+      pixels.setPixelColor(i, pixels.Color(0,0,0));
+      pixels.show(); // This sends the updated pixel color to the hardware.
+      
+    }
+    delay(delayval+100);
+  }
+}
+
+int allOn(){
+  for(int i=0 ;i<8; i++){
+    int r = random(254);
+    int g = random(254);
+    int b = random(254);
+    pixels.setPixelColor(i, pixels.Color(255,165,0));
+    pixels.show(); // This sends the updated pixel color to the hardware.
+    
+
+  }
+  delay(delayval);
+}
+
+int hotFuzzFlash(int n){
+  //n = number of time to loop
+  for(int x = 0; x < n; x++){
+    for(int i = 0; i < 4; i++){
+      pixels.setPixelColor(i,pixels.Color(254,0,0));
+    }
+      pixels.show();
+      delay(random(200));
+    
+     for(int h = 0; h < 4; h++){
+      pixels.setPixelColor(h,pixels.Color(0,0,0));
+     }
+      pixels.show();
+      delay(random(200));
+  
+    for(int i = 4; i < 8; i++){
+      pixels.setPixelColor(i,pixels.Color(0,0,254));
+    }
+      pixels.show();
+      delay(random(200));
+    
+     for(int h = 4; h < 8; h++){
+      pixels.setPixelColor(h,pixels.Color(0,0,0));
+     }
+      pixels.show();
+      delay(random(200));
+
+  }
+ 
+}
+
+int hotFuzzRun(int n){
+  //n = number of time to loop
+  for(int x = 0; x < n; x++){
+    for(int y=3,z=4;(y>-1) && (z<8); y--,z++){
+      pixels.setPixelColor(y, 255,0,0); //pixels.Color(254,0,0));
+      pixels.setPixelColor(z, pixels.Color(0,0,254));
+      pixels.show();
+      delay(150);      
+    }
+    
+    for(int k = 0; k<8;k++){
+      pixels.setPixelColor(k, pixels.Color(0,0,0));
+      pixels.show();
+    }
+    delay(100);
+  }
+}
+
+int pride(int n, int dir){
+//n = number of time to loop
+//dir = direction
+// need to find a better way
+
+  long colors[15][8] = {
+  {black,black,black,black,black,black,black,black},
+  {purple,black,black,black,black,black,black,black},
+  {blue,purple,black,black,black,black,black,black},
+  {green,blue,purple,black,black,black,black,black},
+  {orange,green,blue,purple,black,black,black,black},
+  {yellow,orange,green,blue,purple,black,black,black},
+  {red,yellow,orange,green,blue,purple,black,black},
+  {black,red,yellow,orange,green,blue,purple,black},
+  {black,black,red,yellow,orange,green,blue,purple},
+  {black,black,black,red,yellow,orange,green,blue},
+  {black,black,black,black,red,yellow,orange,green},
+  {black,black,black,black,black,red,yellow,orange},
+  {black,black,black,black,black,black,red,yellow},
+  {black,black,black,black,black,black,black,red},
+  {black,black,black,black,black,black,black,black}
+  };
+  
+  
+
+    switch (dir) {
+      //reverse
+      case 1:
+      //loop animation n times
+        for(int i = 0; i < n; i++){
+          for(int a = 14; a>-1;a--){
+            for( int b=0; b<8; b++){
+              pixels.setPixelColor(b,colors[a][b]);
+              pixels.show();
+            }
+            if (a==7){
+              fade(3);
+            }
+            delay(200);
+          }
+        }
+      break;
+      
+      case 0:
+        //forward
+        //loop animation n times
+        for(int i=0; i<n; i++){
+          for(int a=0; a<15; a++){
+            for( int b=0; b<8; b++){
+              pixels.setPixelColor(b,colors[a][b]);
+              pixels.show();
+            }
+            if (a==7){
+              fade(3);
+            }else{
+              delay(200);
+            }
+          }
+          pixels.clear();
+        }
+      break;
+    
+  }
+}
+    
+int fade(int n){
+  for(int i=0; i<n; i++){
+    for(int a = 0; a < 255; a++){
+        pixels.setPixelColor(1,pixels.Color(a,0,0));//red 
+        pixels.setPixelColor(2,pixels.Color(a,a,0));//yellow
+        pixels.setPixelColor(3,pixels.Color(a,map(a,0,255,0,165),0));//orange
+        pixels.setPixelColor(4,pixels.Color(0,a,0));//green
+        pixels.setPixelColor(5,pixels.Color(0,0,a));//blue
+        pixels.setPixelColor(6,pixels.Color(a,0,a));//purple
+        pixels.show();
+        delay(2); 
+    }
+    for(int c = 254; c > -1; c--){
+      
+        pixels.setPixelColor(1,pixels.Color(c,0,0));//red
+        pixels.setPixelColor(2,pixels.Color(c,c,0));//yellow
+        pixels.setPixelColor(3,pixels.Color(c,map(c,0,255,0,165),0));//orange
+        pixels.setPixelColor(4,pixels.Color(0,c,0));//green
+        pixels.setPixelColor(5,pixels.Color(0,0,c));//blue
+        pixels.setPixelColor(6,pixels.Color(c,0,c));//purple
+        pixels.show();
+        delay(2);      
+     
+    }
+  }
+}
