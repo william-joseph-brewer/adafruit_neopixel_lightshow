@@ -1,0 +1,57 @@
+#include <Adafruit_NeoPixel.h>
+
+long randNumber;
+#define PIN            9
+
+#define NUMPIXELS      8
+
+  
+
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB /*+ NEO_KHZ800*/);
+void setup() {
+  //start neopixels
+  pixels.begin();
+
+  // another thing that should be looked at again
+  randomSeed(analogRead(0));
+
+  //give things a second to get started, why not?
+  delay(1000);
+}
+
+void loop() {
+
+ // light show
+ text("Hello World");
+ 
+ }
+ 
+ 
+int text(String myText){
+  //display a message in binary
+  for(int i=0; i<myText.length(); i++){
+    char myChar = myText.charAt(i);
+    Serial.print(myChar);
+    for(int i=7, x=0; (i>=0) && (x<8); i--,x++){
+      byte bytes = bitRead(myChar,i);
+      Serial.print(bytes, BIN);
+      if(bytes == 1){
+        pixels.setPixelColor(x,pixels.Color(0,0,255));
+        pixels.show();
+      }else{
+        pixels.setPixelColor(x,25,0,25);
+        pixels.show();
+      }
+    }
+    Serial.println("");
+    delay(2000);
+    
+    
+  }
+  for(int a=0;a<8;a++){
+    pixels.setPixelColor(a,0,0,0);
+    pixels.show();
+  }
+  delay(2000);
+}
+
