@@ -1,0 +1,241 @@
+#include <Adafruit_NeoPixel.h>
+
+#define PIN            0 
+#define NUMPIXELS      8
+#define button1Pin     1 
+
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB /*+ NEO_KHZ800*/);
+
+//define some colors
+uint32_t red = pixels.Color(255, 0, 0);
+uint32_t yellow = pixels.Color(255, 255, 0);
+uint32_t orange = pixels.Color(255, 165, 0);
+uint32_t green = pixels.Color(0, 255, 0);
+uint32_t blue = pixels.Color(0, 0, 255);
+uint32_t purple = pixels.Color(255, 0, 255);
+uint32_t black = pixels.Color(0, 0, 0);
+
+// delay var
+int delayval = 100;
+  
+int count = 0;
+
+volatile byte state = HIGH;
+
+void setup() {
+  //start neopixels
+  pixels.begin();
+  attachInterrupt(digitalPinToInterrupt(button1Pin), buttonPress, RISING);
+  //give things a second to get started, why not?
+  delay(1000);
+}
+
+//interrupt function
+void buttonPress() {
+  static unsigned long last_interrupt_time = 0;
+  unsigned long interrupt_time = millis();
+  // If interrupts come faster than 200ms, assume it's a bounce and ignore
+  if (interrupt_time - last_interrupt_time > 250){
+    count += 1;
+  }
+  last_interrupt_time = interrupt_time;
+}
+
+
+
+//custom functions
+int Pride(int n, int dir){
+
+  long colors[15][8] = {
+  {black,black,black,black,black,black,black,black},
+  {purple,black,black,black,black,black,black,black},
+  {blue,purple,black,black,black,black,black,black},
+  {green,blue,purple,black,black,black,black,black},
+  {orange,green,blue,purple,black,black,black,black},
+  {yellow,orange,green,blue,purple,black,black,black},
+  {red,yellow,orange,green,blue,purple,black,black},
+  {black,red,yellow,orange,green,blue,purple,black},
+  {black,black,red,yellow,orange,green,blue,purple},
+  {black,black,black,red,yellow,orange,green,blue},
+  {black,black,black,black,red,yellow,orange,green},
+  {black,black,black,black,black,red,yellow,orange},
+  {black,black,black,black,black,black,red,yellow},
+  {black,black,black,black,black,black,black,red},
+  {black,black,black,black,black,black,black,black}
+  };
+  //loop animation n times
+  
+
+    switch (dir) {
+      case 1:
+        for(int i = 0; i < n; i++){
+          for(int a = 14; a>-1;a--){
+            for( int b=0; b<8; b++){
+              pixels.setPixelColor(b,colors[a][b]);
+              pixels.show();
+            }
+            if (a==7){
+              fade(3);
+            }
+            delay(200);
+          }
+        }
+      break;
+      
+      case 0:
+        for(int i=0; i<n; i++){
+          for(int a=0; a<15; a++){
+            for( int b=0; b<8; b++){
+              pixels.setPixelColor(b,colors[a][b]);
+              pixels.show();
+            }
+            if (a==7){
+              fade(3);
+            }else{
+              delay(200);
+            }
+          }
+          pixels.clear();
+        }
+      break;
+    
+  }
+}
+
+int hotFuzzFlash(int n){
+  for(int x = 0; x < n; x++){
+    for(int i = 0; i < 4; i++){
+      pixels.setPixelColor(i,pixels.Color(254,0,0));
+    }
+      pixels.show();
+      delay(random(200));
+    
+     for(int h = 0; h < 4; h++){
+      pixels.setPixelColor(h,pixels.Color(0,0,0));
+     }
+      pixels.show();
+      delay(random(200));
+  
+    for(int i = 4; i < 8; i++){
+      pixels.setPixelColor(i,pixels.Color(0,0,254));
+    }
+      pixels.show();
+      delay(random(200));
+    
+     for(int h = 4; h < 8; h++){
+      pixels.setPixelColor(h,pixels.Color(0,0,0));
+     }
+      pixels.show();
+      delay(random(200));
+
+  }
+ 
+}
+
+int hotFuzzRun(int n){
+  for(int x = 0; x < n; x++){
+    for(int y=3,z=4;(y>-1) && (z<8); y--,z++){
+      pixels.setPixelColor(y, 255,0,0); //pixels.Color(254,0,0));
+      pixels.setPixelColor(z, pixels.Color(0,0,254));
+      pixels.show();
+      delay(150);      
+    }
+    
+    for(int k = 0; k<8;k++){
+      pixels.setPixelColor(k, pixels.Color(0,0,0));
+      pixels.show();
+    }
+    delay(100);
+  }
+}
+
+int fade(int n){
+  for(int i=0; i<n; i++){
+    for(int a = 0; a < 255; a++){
+        pixels.setPixelColor(1,pixels.Color(a,0,0));//red 
+        pixels.setPixelColor(2,pixels.Color(a,a,0));//yellow
+        pixels.setPixelColor(3,pixels.Color(a,map(a,0,255,0,165),0));//orange
+        pixels.setPixelColor(4,pixels.Color(0,a,0));//green
+        pixels.setPixelColor(5,pixels.Color(0,0,a));//blue
+        pixels.setPixelColor(6,pixels.Color(a,0,a));//purple
+        pixels.show();
+        delay(2); 
+    }
+    for(int c = 254; c > -1; c--){
+      
+        pixels.setPixelColor(1,pixels.Color(c,0,0));//red
+        pixels.setPixelColor(2,pixels.Color(c,c,0));//yellow
+        pixels.setPixelColor(3,pixels.Color(c,map(c,0,255,0,165),0));//orange
+        pixels.setPixelColor(4,pixels.Color(0,c,0));//green
+        pixels.setPixelColor(5,pixels.Color(0,0,c));//blue
+        pixels.setPixelColor(6,pixels.Color(c,0,c));//purple
+        pixels.show();
+        delay(2);      
+     
+    }
+  }
+}
+
+int randPixl(int n){
+  for(int a = 0; a<n;a++){
+    for(int x = 0; x < 8; x++){
+      pixels.setPixelColor(random(0,8),random(255),random(255),random(255));
+      pixels.show();
+      delay(random(255));
+    }
+    pixels.clear();
+  }
+}
+
+int Scan(int n){
+  for(int x = 0; x<n;x++){
+    int delayVal = 100;
+    pixels.setPixelColor(0,black);
+    pixels.show();
+    delay(delayVal+100);
+    for(int a = -1;a<9;a++){
+      
+      pixels.setPixelColor(a-1,15,0,0);
+      pixels.setPixelColor(a,red);
+      pixels.setPixelColor(a+1,15,0,0);
+      pixels.show();
+      delay(delayVal);
+      pixels.clear();
+    }
+  
+    pixels.setPixelColor(7,black);
+    pixels.show();
+    delay(delayVal+100);
+    
+    for(int b = 8;b>-2;b--){
+      
+      pixels.setPixelColor(b+1,15,0,0);
+      pixels.setPixelColor(b,red);
+      pixels.setPixelColor(b-1,15,0,0); 
+      pixels.show();
+      delay(delayVal);
+      pixels.clear();
+    }
+  }
+ 
+}
+
+//loop start
+void loop() { 
+  switch (count%4){
+    case 0:
+      Scan(1);
+    break;
+    case 1:
+      randPixl(1);
+    break;
+    case 2:
+      hotFuzzFlash(1);
+      hotFuzzRun(1);
+    break;
+    case 3:
+      Pride(1,0);
+      Pride(1,1);
+    break;
+  }
+}
