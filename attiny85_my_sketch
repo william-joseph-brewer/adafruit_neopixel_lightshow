@@ -1,8 +1,8 @@
 #include <Adafruit_NeoPixel.h>
 
-#define PIN            0 
+#define PIN            0 // 0 for attiny85, 9 for uno
 #define NUMPIXELS      8
-#define button1Pin     1 
+#define button1Pin     2 // 2 for attiny85, 2 for uno
 
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB /*+ NEO_KHZ800*/);
 
@@ -20,11 +20,14 @@ int delayval = 100;
   
 int count = 0;
 
-volatile byte state = HIGH;
+volatile byte buttonPressed = false;
 
 void setup() {
+  //Serial.begin(9600);
   //start neopixels
   pixels.begin();
+  
+  pinMode(button1Pin, INPUT);
   attachInterrupt(digitalPinToInterrupt(button1Pin), buttonPress, RISING);
   //give things a second to get started, why not?
   delay(1000);
@@ -32,6 +35,9 @@ void setup() {
 
 //interrupt function
 void buttonPress() {
+  
+  buttonPressed = !buttonPressed;
+  
   static unsigned long last_interrupt_time = 0;
   unsigned long interrupt_time = millis();
   // If interrupts come faster than 200ms, assume it's a bounce and ignore
@@ -44,7 +50,7 @@ void buttonPress() {
 
 
 //custom functions
-int Pride(int n, int dir){
+int rainbow(int n, int dir){
 
   long colors[15][8] = {
   {black,black,black,black,black,black,black,black},
@@ -220,22 +226,58 @@ int Scan(int n){
  
 }
 
+int text(String myText){
+  //display a message in binary
+  for(int i=0; i<myText.length(); i++){
+    char myChar = myText.charAt(i);
+ 
+    for(int i=7, x=0; (i>=0) && (x<8); i--,x++){
+      byte bytes = bitRead(myChar,i);
+      if(bytes == 1){
+        pixels.setPixelColor(x,pixels.Color(0,0,255));
+        pixels.show();
+      }else{
+        pixels.setPixelColor(x,0,0,0);
+        pixels.show();
+      }
+    }
+    delay(2000);
+    
+    
+  }
+  for(int a=0;a<8;a++){
+    pixels.setPixelColor(a,0,0,0);
+    pixels.show();
+  }
+  delay(2000);
+}
+
+
 //loop start
 void loop() { 
+  //Serial.println(buttonPressed);
+    if(buttonPressed){
+    buttonPressed = !buttonPressed;
+  }
   switch (count%4){
     case 0:
+    if(buttonPressed)return;
       Scan(1);
     break;
     case 1:
+      if(buttonPressed)return;
       randPixl(1);
     break;
     case 2:
-      hotFuzzFlash(1);
-      hotFuzzRun(1);
+      if(buttonPressed)return;
+      hotFuzzFlash(5);
+      if(buttonPressed)return;
+      hotFuzzRun(5);
     break;
     case 3:
-      Pride(1,0);
-      Pride(1,1);
+      if(buttonPressed)return;
+      text("Hello");
     break;
+    
   }
 }
