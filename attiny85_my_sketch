@@ -23,7 +23,6 @@ int count = 0;
 volatile byte buttonPressed = false;
 
 void setup() {
-  //Serial.begin(9600);
   //start neopixels
   pixels.begin();
   
@@ -50,61 +49,18 @@ void buttonPress() {
 
 
 //custom functions
-int rainbow(int n, int dir){
+int Pride(){
 
-  long colors[15][8] = {
-  {black,black,black,black,black,black,black,black},
-  {purple,black,black,black,black,black,black,black},
-  {blue,purple,black,black,black,black,black,black},
-  {green,blue,purple,black,black,black,black,black},
-  {orange,green,blue,purple,black,black,black,black},
-  {yellow,orange,green,blue,purple,black,black,black},
-  {red,yellow,orange,green,blue,purple,black,black},
-  {black,red,yellow,orange,green,blue,purple,black},
-  {black,black,red,yellow,orange,green,blue,purple},
-  {black,black,black,red,yellow,orange,green,blue},
-  {black,black,black,black,red,yellow,orange,green},
-  {black,black,black,black,black,red,yellow,orange},
-  {black,black,black,black,black,black,red,yellow},
-  {black,black,black,black,black,black,black,red},
-  {black,black,black,black,black,black,black,black}
-  };
-  //loop animation n times
-  
-
-    switch (dir) {
-      case 1:
-        for(int i = 0; i < n; i++){
-          for(int a = 14; a>-1;a--){
-            for( int b=0; b<8; b++){
-              pixels.setPixelColor(b,colors[a][b]);
-              pixels.show();
-            }
-            if (a==7){
-              fade(3);
-            }
-            delay(200);
-          }
-        }
-      break;
-      
-      case 0:
-        for(int i=0; i<n; i++){
-          for(int a=0; a<15; a++){
-            for( int b=0; b<8; b++){
-              pixels.setPixelColor(b,colors[a][b]);
-              pixels.show();
-            }
-            if (a==7){
-              fade(3);
-            }else{
-              delay(200);
-            }
-          }
-          pixels.clear();
-        }
-      break;
-    
+  for(int p=-1,b=-2,g=-3,o=-4,y=-5,r=-6;(p<14)&&(b<13)&&(g<12)&&(o<11)&&(y<10)&&(r<9);p++,b++,g++,o++,y++,r++){
+    pixels.setPixelColor(p,purple);
+    pixels.setPixelColor(b,blue);
+    pixels.setPixelColor(g,green);
+    pixels.setPixelColor(o,orange);
+    pixels.setPixelColor(y,yellow);
+    pixels.setPixelColor(r,red);
+    pixels.show();
+    delay(200);
+    pixels.clear();
   }
 }
 
