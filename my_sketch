@@ -25,7 +25,7 @@ Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB /*+ NEO_KHZ
   
 int count = 0;
 
-volatile byte state = HIGH;
+volatile byte state = false;
 
 void setup() {
   //start neopixels
@@ -38,8 +38,8 @@ attachInterrupt(digitalPinToInterrupt(button1Pin), buttonPress, RISING);
 
 void buttonPress() {
  
-  //state = !state;
-  static unsigned long last_interrupt_time = 0;
+ state = !state;
+ static unsigned long last_interrupt_time = 0;
  unsigned long interrupt_time = millis();
  // If interrupts come faster than 200ms, assume it's a bounce and ignore
  if (interrupt_time - last_interrupt_time > 250) 
@@ -53,61 +53,18 @@ void buttonPress() {
 
 
 
-int Pride(int n, int dir){
+int Pride(){
 
-  long colors[15][8] = {
-  {black,black,black,black,black,black,black,black},
-  {purple,black,black,black,black,black,black,black},
-  {blue,purple,black,black,black,black,black,black},
-  {green,blue,purple,black,black,black,black,black},
-  {orange,green,blue,purple,black,black,black,black},
-  {yellow,orange,green,blue,purple,black,black,black},
-  {red,yellow,orange,green,blue,purple,black,black},
-  {black,red,yellow,orange,green,blue,purple,black},
-  {black,black,red,yellow,orange,green,blue,purple},
-  {black,black,black,red,yellow,orange,green,blue},
-  {black,black,black,black,red,yellow,orange,green},
-  {black,black,black,black,black,red,yellow,orange},
-  {black,black,black,black,black,black,red,yellow},
-  {black,black,black,black,black,black,black,red},
-  {black,black,black,black,black,black,black,black}
-  };
-  //loop animation n times
-  
-
-    switch (dir) {
-      case 1:
-        for(int i = 0; i < n; i++){
-          for(int a = 14; a>-1;a--){
-            for( int b=0; b<8; b++){
-              pixels.setPixelColor(b,colors[a][b]);
-              pixels.show();
-            }
-            if (a==7){
-              fade(3);
-            }
-            delay(200);
-          }
-        }
-      break;
-      
-      case 0:
-        for(int i=0; i<n; i++){
-          for(int a=0; a<15; a++){
-            for( int b=0; b<8; b++){
-              pixels.setPixelColor(b,colors[a][b]);
-              pixels.show();
-            }
-            if (a==7){
-              fade(3);
-            }else{
-              delay(200);
-            }
-          }
-          pixels.clear();
-        }
-      break;
-    
+  for(int p=-1,b=-2,g=-3,o=-4,y=-5,r=-6;(p<14)&&(b<13)&&(g<12)&&(o<11)&&(y<10)&&(r<9);p++,b++,g++,o++,y++,r++){
+    pixels.setPixelColor(p,purple);
+    pixels.setPixelColor(b,blue);
+    pixels.setPixelColor(g,green);
+    pixels.setPixelColor(o,orange);
+    pixels.setPixelColor(y,yellow);
+    pixels.setPixelColor(r,red);
+    pixels.show();
+    delay(200);
+    pixels.clear();
   }
 }
 
@@ -377,9 +334,10 @@ int Scan(int n){
 
 
 void loop() {
-
  
-  
+  if(state){
+    state = !state;
+  }
   switch (count%4){
   case 0:
     Scan(1);
@@ -392,9 +350,7 @@ void loop() {
     hotFuzzRun(1);
     break;
   case 3:
-    Pride(1,0);
-    Pride(1,1);
+    Pride();
     break;
   }
-
 }
